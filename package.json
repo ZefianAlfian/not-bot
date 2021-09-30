@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "@adiwajshing/baileys": "github:adiwajshing/baileys",
-    "axios": "^0.21.4"
+    "axios": "^0.21.4",
+    "didyoumean": "^1.2.2",
+    "zrapi": "0.0.6"
   }
 }

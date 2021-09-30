@@ -2,7 +2,7 @@ const prefix = "/"
 const { WAConnection, MessageType } = require("@adiwajshing/baileys");
 const axios = require("axios");
 const fs = require("fs");
-
+const didYouMean = require("didyoumean");
 
 WAConnection.prototype.get = function (message, callback){
 	if (!this.commands) this.commands = {};
@@ -39,12 +39,14 @@ conn.on("chat-update", async (chat) => {
 	const argv = body.slice(1).trim().split(/ +/).shift().toLowerCase();
 	const args = body.trim().split(/ +/).slice(1);
 	
-	// const args = body.trim().split(/ +/).slice(1);
-	// console.log(argv)
+	const mean = Object.keys(conn.commands)
+	if (didYouMean(argv, mean) in conn.commands && !(argv in conn.commands)){
+		conn.sendMessage(from, `Mungkin yang anda maksud adalah ${prefix}${didYouMean(argv, mean)}`, "conversation", { quoted: content })
+	}
 	if (argv in conn.commands) {
 		conn.commands[argv](content, args);
-		console.log(`[ USED COMMAND ] ${argv}`)
-		await conn.chatRead(from);
+		console.log(`[ USED COMMAND ] ${argv}`);
+		await conn.chatRead(from)
 	}
 })
 
@@ -54,6 +56,30 @@ conn.on("message-delete", (tes) => {
 
 conn.get("help", (m) => {
 	conn.sendMessage(m.key.remoteJid, "Hello", MessageType.extendedText);
+})
+
+conn.get("eval", (m, args) => {
+	const code = args.join` `;
+	const evaled = eval(code);
+
+	conn.sendMessage(m.key.remoteJid, evaled, MessageType.extendedText)
+})
+
+conn.get("conv", async (m) => {
+	const media = JSON.parse(JSON.stringify(m).replace("quotedM", "m")).message.extendedTextMessage.contextInfo;
+
+	await conn.downloadAndSaveMediaMessage(media)
+})
+
+conn.get("liat", async (m) => {
+	if (!m.message.extendedTextMessage.contextInfo) return;
+	const { stanzaId: messageId } = m.message.extendedTextMessage.contextInfo;
+
+	const loadM = await conn.loadMessage(m.key.remoteJid, messageId);
+	const media = JSON.parse(JSON.stringify(loadM).replace("quotedM", "m")).message.extendedTextMessage.contextInfo;
+	const buff = await conn.downloadMediaMessage(media);
+
+	conn.sendMessage(m.key.remoteJid, buff, MessageType.image);
 })
 
 conn.get("curi", async (m, args) => {
