@@ -7,8 +7,8 @@ const {
 const Pino = require("pino");
 const { Boom } = require("@hapi/boom");
 const path = require("path").join;
-const axios = require("axios");
-const { serialize, store } = require("../function/index.js");
+const { default: axios } = require("axios");
+const { serialize, store, getBuffer } = require("../function/index.js");
 
 const start = async () => {
   const { state, saveCreds } = await useMultiFileAuthState(path("./session"));
@@ -187,8 +187,28 @@ const start = async () => {
           });
           break;
         case "telestick":
-          if (args.length < 0) return msg.reply("Masukkan url sticker set\n\nContoh :\n/telestick https://t.me/addstickers/playdaddybbgddk_by_fStikBot")
-          var urlStiker = args.join``
+          if (!args.length) return msg.reply("Masukkan url sticker set\n\nContoh :\n/telestick https://t.me/addstickers/playdaddybbgddk_by_fStikBot")
+          var urlStiker = args.join``.replace("https://t.me/addstickers/", "")
+
+          var res = await axios.get(`https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getStickerSet?name=${urlStiker}`)
+          var data = res.data.result;
+
+          var hasil = `Nama : ${data.nama}
+Bergerak : ${data.is_animated}
+Dibuat Oleh : ${data.title}`;
+
+          msg.reply(hasil)
+          for (let i of data.stickers) {
+            axios.get(`https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getFile?file_id=${i.thumb.file_id}`).then((des) => {
+              getBuffer(`https://api.telegram.org/file/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/${des.data.result.file_path}`).then(async (stick) => {
+                sock.sendMessage(from, stick, sticker)
+                await sock.sendMessage(
+                  msg.from,
+                  { sticker: stick },
+                );
+              })
+            })
+          }
           break;
         case "curi":
           if (msg.quoted.mtype != "stickerMessage") return;
