@@ -16,7 +16,7 @@ const start = async () => {
 
   console.log(`Using: ${version}, newer: ${isLatest}`);
 
-  const sock = WASocket({
+  const sock = makeWASocket({
     printQRInTerminal: true,
     auth: state,
     logger: Pino({ level: "silent" }),
@@ -185,6 +185,10 @@ const start = async () => {
               { quoted: msg }
             );
           });
+          break;
+        case "telestick":
+          if (args.length < 0) return msg.reply("Masukkan url sticker set\n\nContoh :\n/telestick https://t.me/addstickers/playdaddybbgddk_by_fStikBot")
+          var urlStiker = args.join``
           break;
         case "curi":
           if (msg.quoted.mtype != "stickerMessage") return;
