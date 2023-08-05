@@ -193,7 +193,7 @@ const start = async () => {
           var res = await axios.get(`https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getStickerSet?name=${urlStiker}`)
           var data = res.data.result;
 
-          var hasil = `Nama : ${data.nama}
+          var hasil = `Nama : ${data.name}
 Bergerak : ${data.is_animated}
 Dibuat Oleh : ${data.title}`;
 
@@ -201,7 +201,6 @@ Dibuat Oleh : ${data.title}`;
           for (let i of data.stickers) {
             axios.get(`https://api.telegram.org/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/getFile?file_id=${i.thumb.file_id}`).then((des) => {
               getBuffer(`https://api.telegram.org/file/bot891038791:AAHWB1dQd-vi0IbH2NjKYUk-hqQ8rQuzPD4/${des.data.result.file_path}`).then(async (stick) => {
-                sock.sendMessage(from, stick, sticker)
                 await sock.sendMessage(
                   msg.from,
                   { sticker: stick },
