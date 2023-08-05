@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Bluebird = require("bluebird");
+const { default: axios } = require("axios")
 const {
   proto,
   getContentType,
@@ -151,8 +152,8 @@ function serialize(msg, sock) {
     msg.sender = msg.isGroup
       ? decodeJid(msg.key.participant)
       : msg.isSelf
-      ? decodeJid(sock.user.id)
-      : msg.from;
+        ? decodeJid(sock.user.id)
+        : msg.from;
   }
   if (msg.message) {
     msg.type = getContentType(msg.message);
@@ -258,22 +259,22 @@ function serialize(msg, sock) {
 }
 
 const getBuffer = async (url, options) => {
-	try {
-		options ? options : {}
-		const res = await axios({
-			method: "get",
-			url,
-			headers: {
-				'DNT': 1,
-				'Upgrade-Insecure-Request': 1
-			},
-			...options,
-			responseType: 'arraybuffer'
-		})
-		return res.data
-	} catch (e) {
-		console.log(`Error : ${e}`)
-	}
+  try {
+    options ? options : {}
+    const res = await axios({
+      method: "get",
+      url,
+      headers: {
+        'DNT': 1,
+        'Upgrade-Insecure-Request': 1
+      },
+      ...options,
+      responseType: 'arraybuffer'
+    })
+    return res.data
+  } catch (e) {
+    console.log(`Error : ${e}`)
+  }
 }
 module.exports = {
   store: { chats, bind, writeToFile, readFromFile },
