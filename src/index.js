@@ -1,9 +1,9 @@
 const {
-  default: WASocket,
+  default: makeWASocket,
   DisconnectReason,
   useMultiFileAuthState,
   fetchLatestWaWebVersion,
-} = require("@adiwajshing/baileys");
+} = require("@whiskeysockets/baileys");
 const Pino = require("pino");
 const { Boom } = require("@hapi/boom");
 const path = require("path").join;

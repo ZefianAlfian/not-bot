@@ -5,7 +5,7 @@ const {
   getContentType,
   jidDecode,
   downloadContentFromMessage,
-} = require("@adiwajshing/baileys");
+} = require("@whiskeysockets/baileys");
 
 /**
  * Custom memoryStore
